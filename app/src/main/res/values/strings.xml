@@ -3,4 +3,5 @@
     <string name="login_str">Login</string>
     <string name="email_str">Email</string>
     <string name="password_str">Password</string>
+    <string name="roomString">Room Name</string>
 </resources>

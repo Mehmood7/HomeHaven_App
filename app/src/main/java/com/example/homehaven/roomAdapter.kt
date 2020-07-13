@@ -8,21 +8,21 @@ import android.widget.BaseAdapter
 import android.widget.TextView
 import java.util.*
 
-class roomAdapter(con: Context, frnds:Vector<String>): BaseAdapter() {
+class roomAdapter(con: Context, rooms:Vector<String>): BaseAdapter() {
 
     var mContext: Context? = null
     var adaptorList: List<String>? = null
     init{
         mContext = con
-        adaptorList = frnds
+        adaptorList = rooms
     }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         var conView = convertView
         if (convertView == null) conView =
-            LayoutInflater.from(mContext).inflate(R.layout.bin_room_item, null)
+            LayoutInflater.from(mContext).inflate(R.layout.room_name_item, null)
         val frnd: String = getItem(position) as String
-        (conView!!.findViewById<View>(R.id.roomname) as TextView).setText(frnd)
+        (conView!!.findViewById<View>(R.id.room_name_tv) as TextView).setText(frnd)
         return conView!!
     }
 

@@ -135,11 +135,22 @@ import java.net.URL
                      "ok" -> {
                          doToast("Login Successful")
                          val token = string.substring(2,14)
-                         goToHome()
                          with(sharedPref.edit()) {
-                             putString("token", token)
+                             //putString("token", token)
                              commit()
                          }
+                         val room_count = string.get(14).toInt()-48
+                         val rooms = string.substringAfter(':').split(':');
+                         val db = dataStore(applicationContext);
+                         db.clearRoom()
+                         for (room in rooms){
+                             val name = room.substring(9)
+                             val index = room.get(0).toInt()-48
+                             val types = room.substring(1,6)
+                             val state = room.substring(6,9).toInt()
+                             db.addRoom(index, state, name, types)
+                         }
+                         goToHome()
                      }
                      else -> doToast("Unknown Error :" + string)
 
