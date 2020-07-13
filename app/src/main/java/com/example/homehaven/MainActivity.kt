@@ -136,7 +136,7 @@ import java.net.URL
                          doToast("Login Successful")
                          val token = string.substring(2,14)
                          with(sharedPref.edit()) {
-                             //putString("token", token)
+                             putString("token", token)
                              commit()
                          }
                          val room_count = string.get(14).toInt()-48

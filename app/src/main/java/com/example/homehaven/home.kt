@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ListView
+import android.widget.Toast
 
 private lateinit var roomList:ListView ;
 
@@ -27,11 +28,14 @@ class home : AppCompatActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    //val fid: Int = (roomsAdaptor.getItem(position)).server_id
-                    //val chatIntent = Intent(this@FriendList, ChatBox::class.java)
-                    //chatIntent.putExtra("fid", fid)
-                    //startActivity(chatIntent)
+                    val roomIntent = Intent(applicationContext, Room::class.java)
+                    roomIntent.putExtra("room_id", position)
+                    startActivity(roomIntent)
                 }
             })
+    }
+
+    fun doToast(str:String){
+        Toast.makeText(applicationContext,str, Toast.LENGTH_SHORT).show();
     }
 }
