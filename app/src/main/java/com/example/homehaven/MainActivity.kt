@@ -1,9 +1,14 @@
  package com.example.homehaven
 
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.AsyncTask
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import java.io.BufferedReader
@@ -13,31 +18,80 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
-import java.util.*
 
  class MainActivity : AppCompatActivity() {
 
      private lateinit var loginbtn:Button
      private lateinit var emailtxt:EditText
      private lateinit var passwtxt:EditText
+     private lateinit var emaillbl:TextView
+     private lateinit var passwlbl:TextView
+     private lateinit var sharedPref:SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         this.supportActionBar!!.hide()
 
+        sharedPref = getSharedPreferences("prefs",Context.MODE_PRIVATE)?:return
+
 
         loginbtn = findViewById(R.id.login_btn)
         emailtxt = findViewById(R.id.email_et)
         passwtxt = findViewById(R.id.passw_et)
+        emaillbl = findViewById(R.id.textView)
+        passwlbl = findViewById(R.id.textView2)
+
+        val email = sharedPref.getString("email", "")
+        val token = sharedPref.getString("token", "")!!
+        emailtxt.setText(email)
+
+        if (email != "" && token != "") {
+            val creds = "email=${email}&token=${token}"
+            tokenLoginRequest().execute(creds);
+            hide()
+        }
 
         loginbtn.setOnClickListener {
             val creds = "email=${emailtxt.text}&password=${passwtxt.text}"
-            loginRequest().execute(creds);
+            with (sharedPref.edit()) {
+                putString("email", "${emailtxt.text}")
+                commit()
+            }
+            passwordLoginRequest().execute(creds);
         }
 
     }
-     inner class loginRequest : AsyncTask<String,String, String>() {
+     fun doToast(str:String){
+         Toast.makeText(applicationContext,str,Toast.LENGTH_SHORT).show();
+     }
+
+     fun goToHome(){
+         val homeScreen = Intent(
+             this,
+             home::class.java
+         )
+         homeScreen.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+         startActivity(homeScreen)
+     }
+
+     fun hide(){
+         emailtxt.visibility = View.INVISIBLE
+         passwtxt.visibility = View.INVISIBLE
+         loginbtn.visibility = View.INVISIBLE
+         emaillbl.visibility = View.INVISIBLE
+         passwlbl.visibility = View.INVISIBLE
+     }
+
+     fun show(){
+         emailtxt.visibility = View.VISIBLE
+         passwtxt.visibility = View.VISIBLE
+         loginbtn.visibility = View.VISIBLE
+         emaillbl.visibility = View.VISIBLE
+         passwlbl.visibility = View.VISIBLE
+     }
+
+     inner class passwordLoginRequest : AsyncTask<String,String, String>() {
          override fun doInBackground(vararg params: String): String? {
              val url: URL
              val httpURLConnection: HttpURLConnection
@@ -46,7 +100,7 @@ import java.util.*
              val bufferedReader: BufferedReader
              var stringFromServer: String
              try {
-                 url = URL("https://iothh.000webhostapp.com/api/gettoken")
+                 url = URL("https://iothh.000webhostapp.com/api/applogin")
                  httpURLConnection = url.openConnection() as HttpURLConnection
                  httpURLConnection.requestMethod = "POST"
                  httpURLConnection.setRequestProperty(
@@ -75,20 +129,82 @@ import java.util.*
 
          override fun onPostExecute(string: String?) {
              if (string == null) doToast("No Response") else {
-                 val code = string.first() + "" +string.last();
+                 val code = string.substring(0,2);
                  when (code) {
                      "id" -> doToast("Login Failed")
-                     "ok" -> doToast("Login Successful")
+                     "ok" -> {
+                         doToast("Login Successful")
+                         val token = string.substring(2,14)
+                         goToHome()
+                         with(sharedPref.edit()) {
+                             putString("token", token)
+                             commit()
+                         }
+                     }
                      else -> doToast("Unknown Error :" + string)
 
                  }
              }
 
          }
-         fun doToast(str:String){
-             Toast.makeText(applicationContext,str,Toast.LENGTH_SHORT).show();
+     }
+
+     inner class tokenLoginRequest : AsyncTask<String,String, String>() {
+         override fun doInBackground(vararg params: String): String? {
+             val url: URL
+             val httpURLConnection: HttpURLConnection
+             val outputStreamWriter: OutputStreamWriter
+             val inputStreamReader: InputStreamReader
+             val bufferedReader: BufferedReader
+             var stringFromServer: String
+             try {
+                 url = URL("https://iothh.000webhostapp.com/api/verifytoken")
+                 httpURLConnection = url.openConnection() as HttpURLConnection
+                 httpURLConnection.requestMethod = "POST"
+                 httpURLConnection.setRequestProperty(
+                     "Content-Type",
+                     "application/x-www-form-urlencoded"
+                 )
+                 outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
+                 outputStreamWriter.write(params[0])
+                 outputStreamWriter.flush()
+                 outputStreamWriter.close()
+                 inputStreamReader = InputStreamReader(httpURLConnection.inputStream)
+                 bufferedReader = BufferedReader(inputStreamReader)
+                 stringFromServer = bufferedReader.readLine()
+                 inputStreamReader.close()
+                 bufferedReader.close()
+                 return stringFromServer
+             } catch (e: MalformedURLException) {
+                 e.printStackTrace()
+             } catch (e: IOException) {
+                 e.printStackTrace()
+             }
+             return null
+
          }
 
+
+         override fun onPostExecute(string: String?) {
+             if (string == null) doToast("No Response") else {
+                 when (string) {
+                     "invalid" -> {
+                         doToast("Please Login")
+                         show()
+                     }
+                     "ok" -> {
+                         doToast("Login Successful")
+                         goToHome()
+                     }
+                     else -> {
+                         doToast("Unknown Error :" + string)
+                         show()
+                     }
+
+                 }
+             }
+
+         }
      }
 
  }
