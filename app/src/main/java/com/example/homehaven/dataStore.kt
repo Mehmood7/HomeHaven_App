@@ -48,4 +48,14 @@ class dataStore(context: Context) : SQLiteOpenHelper(context, "homehavenDB", nul
         }
         return rooms
     }
+
+    fun getRoomObj(index: Int): roomClass{
+        val roomCursor = db!!.rawQuery("SELECT * FROM ROOMS WHERE room_index = ${index};", null)
+
+        if (roomCursor.moveToNext()) {
+                return roomClass(roomCursor.getInt(1),roomCursor.getString(2),
+                    roomCursor.getString(3),roomCursor.getInt(4))
+        }
+        return roomClass(0, "Room name", "00000", 0)
+    }
 }

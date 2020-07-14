@@ -15,9 +15,9 @@ class roomClass(index:Int, name:String , types:String, state:Int){
 
 
     private var index:Int = 0
-    private var name:String = ""
-    private var types:String = ""
-    private var state:Int = 0
+     var name:String = ""
+     var types:String = ""
+     var state:Int = 0
     init {
         this.index = index
         this.name = name
@@ -25,10 +25,10 @@ class roomClass(index:Int, name:String , types:String, state:Int){
         this.state = state
 
         device1_type = types.get(0).toInt()-48
-        device2_type = types.get(0).toInt()-48
-        device3_type = types.get(0).toInt()-48
-        device4_type = types.get(0).toInt()-48
-        devicedim_type = types.get(0).toInt()-48
+        device2_type = types.get(1).toInt()-48
+        device3_type = types.get(2).toInt()-48
+        device4_type = types.get(3).toInt()-48
+        devicedim_type = types.get(4).toInt()-48
 
         device1_state = state and 128 == 1
         device2_state = state and 64 == 1
