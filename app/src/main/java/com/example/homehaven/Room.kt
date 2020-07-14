@@ -1,29 +1,39 @@
 package com.example.homehaven
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import java.io.BufferedReader
 import java.io.IOException
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
 
 class Room : AppCompatActivity() {
 
-    private lateinit var title:TextView;
-    private lateinit var dev1:View;
-    private lateinit var dev2:View;
-    private lateinit var dev3:View;
-    private lateinit var dev4:View;
-    private lateinit var dimdev:View;
-    private lateinit var db:dataStore;
-    private lateinit var roomObj:roomClass;
+    private lateinit var title:TextView
+    private lateinit var dev1:View
+    private lateinit var dev2:View
+    private lateinit var dev3:View
+    private lateinit var dev4:View
+    private lateinit var dimdev:View
+    private lateinit var db:dataStore
+    private lateinit var roomObj:roomClass
+    private lateinit var sharedPref:SharedPreferences
+    private var room_index = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room)
+        room_index = intent.extras!!.get("room_id") as Int
 
         title = findViewById(R.id.room_title)
         dev1 = findViewById(R.id.include1)
@@ -32,11 +42,37 @@ class Room : AppCompatActivity() {
         dev4 = findViewById(R.id.include4)
         dimdev = findViewById(R.id.includedim)
 
-        db = dataStore(applicationContext);
-        val room_index = intent.extras!!.get("room_id") as Int
+        sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)?:return
+        val room_state = sharedPref.getInt("room${room_index}state", -1)
+
+        db = dataStore(applicationContext)
+
         roomObj = db.getRoomObj(room_index)
+        if (room_state != -1) roomObj.updateState(room_state)
 
         title.text = roomObj.name
+
+        val email = sharedPref.getString("email", "")
+        val token = sharedPref.getString("token", "")!!
+        val params = "email=${email}&token=${token}&room_index=${room_index}"
+        getRoomState().execute(params);
+
+        setState()
+        setRoom()
+
+    }
+
+    fun setState(){
+        //doToast(""+roomObj.state+roomObj.device1_state+(roomObj.state and 128))
+        dev1.findViewById<Switch>(R.id.on_off_switch).isChecked = roomObj.device1_state
+        dev2.findViewById<Switch>(R.id.on_off_switch).isChecked = roomObj.device2_state
+        dev3.findViewById<Switch>(R.id.on_off_switch).isChecked = roomObj.device3_state
+        dev4.findViewById<Switch>(R.id.on_off_switch).isChecked = roomObj.device4_state
+        dimdev.findViewById<Switch>(R.id.on_off_switch).isChecked = roomObj.devicedim_state
+        dimdev.findViewById<SeekBar>(R.id.dim_seekBar).progress = roomObj.devicedim_level
+    }
+
+    fun setRoom(){
 
         val lightBitmap:Bitmap? = getBitmapFromAssets("icons/bulb.png")
         val fanBitmap:Bitmap? = getBitmapFromAssets("icons/fan.png")
@@ -118,8 +154,8 @@ class Room : AppCompatActivity() {
             else -> dimdev.visibility = View.GONE
         }
 
-
     }
+
     fun doToast(str:String){
         Toast.makeText(applicationContext,str, Toast.LENGTH_SHORT).show();
     }
@@ -132,4 +168,66 @@ class Room : AppCompatActivity() {
             null
         }
     }
+
+    inner class getRoomState : AsyncTask<String,String, String>() {
+        override fun doInBackground(vararg params: String): String? {
+            val url: URL
+            val httpURLConnection: HttpURLConnection
+            val outputStreamWriter: OutputStreamWriter
+            val inputStreamReader: InputStreamReader
+            val bufferedReader: BufferedReader
+            var stringFromServer: String
+            try {
+                url = URL("https://iothh.000webhostapp.com/api/getroomstate")
+                httpURLConnection = url.openConnection() as HttpURLConnection
+                httpURLConnection.requestMethod = "POST"
+                httpURLConnection.setRequestProperty(
+                    "Content-Type",
+                    "application/x-www-form-urlencoded"
+                )
+                outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
+                outputStreamWriter.write(params[0])
+                outputStreamWriter.flush()
+                outputStreamWriter.close()
+                inputStreamReader = InputStreamReader(httpURLConnection.inputStream)
+                bufferedReader = BufferedReader(inputStreamReader)
+                stringFromServer = bufferedReader.readLine()
+                inputStreamReader.close()
+                bufferedReader.close()
+                return stringFromServer
+            } catch (e: MalformedURLException) {
+                e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            return null
+
+        }
+
+
+        override fun onPostExecute(string: String?) {
+            if (string == null) doToast("No Response") else {
+                if (string.length == 3){
+                    val code = string.toInt();
+                    if (code==-10) doToast("State fetch Failed")
+                    else if (code > 0 && code <256 ) {
+                        //doToast("State  :" + string)
+                        roomObj.updateState(code)
+                        setState()
+                        with (sharedPref.edit()) {
+                            putInt("room${room_index}state", code)
+                            commit()
+                        }
+                    }
+                    else doToast("false state")
+
+                }
+                else{
+                    doToast("Invalid state.")
+                }
+            }
+
+            }
+
+        }
 }

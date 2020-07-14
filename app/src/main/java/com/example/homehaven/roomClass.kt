@@ -30,15 +30,23 @@ class roomClass(index:Int, name:String , types:String, state:Int){
         device4_type = types.get(3).toInt()-48
         devicedim_type = types.get(4).toInt()-48
 
-        device1_state = state and 128 == 1
-        device2_state = state and 64 == 1
-        device3_state = state and 32 == 1
-        device4_state = state and 16 == 1
-        devicedim_state = state and 8 == 1
+        device1_state = (state and 128) != 0
+        device2_state = (state and 64) != 0
+        device3_state = (state and 32) != 0
+        device4_state = (state and 16) != 0
+        devicedim_state = (state and 8) != 0
         devicedim_level = state and 7
 
     }
 
-
+    fun updateState(state: Int){
+        this.state = state
+        device1_state = (state and 128) != 0
+        device2_state = (state and 64) != 0
+        device3_state = (state and 32) != 0
+        device4_state = (state and 16) != 0
+        devicedim_state = (state and 8) != 0
+        devicedim_level = state and 7
+    }
 
 }
