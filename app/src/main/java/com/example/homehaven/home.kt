@@ -120,11 +120,11 @@ class home : AppCompatActivity() {
                     var on = false
                     var off = false
                     for (str in resString){
-                        if (str.contains(" on", true)) {
+                        if (str.plus(" ").contains(" on ", true)) {
                             on = true
                             strOnOff = "on"
                         }
-                        if (str.contains(" off", true)) {
+                        if (str.plus(" ").contains(" off ", true)) {
                             off = true
                             strOnOff = "off"
                         }
