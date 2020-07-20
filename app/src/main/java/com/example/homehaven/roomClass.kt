@@ -1,5 +1,6 @@
 package com.example.homehaven
 
+
 class roomClass(index:Int, name:String , types:String, state:Int){
     var device1_type:Int = 0
     var device2_type:Int = 0
@@ -12,6 +13,10 @@ class roomClass(index:Int, name:String , types:String, state:Int){
     var device4_state:Boolean = false
     var devicedim_state:Boolean = false
     var devicedim_level:Int = 0
+    val TYPE_LIGHT = 1
+    val TYPE_FAN = 2
+    val TYPE_SOCKET = 3
+
 
 
     private var index:Int = 0
@@ -47,6 +52,25 @@ class roomClass(index:Int, name:String , types:String, state:Int){
         device4_state = (state and 16) != 0
         devicedim_state = (state and 8) != 0
         devicedim_level = state and 7
+    }
+
+    fun allTurn(type:Int, on:Boolean){
+        if (device1_type == type) device1_state = on
+        if (device2_type == type) device2_state = on
+        if (device3_type == type) device3_state = on
+        if (device4_type == type) device4_state = on
+        if (devicedim_type == type) devicedim_state = on
+        compressState()
+    }
+
+    private fun compressState(){
+        var _state = state and 7
+        if (device1_state) _state += 128
+        if (device2_state) _state += 64
+        if (device3_state) _state += 32
+        if (device4_state) _state += 16
+        if (devicedim_state) _state += 8
+        state = _state
     }
 
 }

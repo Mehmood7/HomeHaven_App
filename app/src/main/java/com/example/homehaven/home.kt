@@ -1,22 +1,35 @@
 package com.example.homehaven
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.os.AsyncTask
 import android.os.Bundle
 import android.speech.RecognizerIntent
-import android.speech.tts.TextToSpeech
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ImageView
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
+import java.net.HttpURLConnection
+import java.net.MalformedURLException
+import java.net.URL
 import java.util.*
 
 
 private lateinit var roomList:ListView
 private lateinit var speechView:ImageView
 private lateinit var roomNames:Vector<String>
+private lateinit var db:dataStore
+private lateinit var roomObj:roomClass
+private lateinit var sharedPref: SharedPreferences
+private var updateStr = ""
 
 class home : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,7 +39,10 @@ class home : AppCompatActivity() {
         roomList = findViewById(R.id.rooms_list)
         speechView = findViewById(R.id.voice_view)
 
-        var db = dataStore(this)
+
+        sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)?:return
+        db = dataStore(applicationContext)
+
         roomNames = db.getRoomNames()!!
         var roomsAdaptor = roomAdapter(this, roomNames)
         roomList.setAdapter(roomsAdaptor)
@@ -134,7 +150,33 @@ class home : AppCompatActivity() {
                     confused = !(on xor off)
 
                     if (!confused){
-                        doToast(strRoomname+" "+strDeviceName+" "+strOnOff)
+                        updateStr = strRoomname+" "+strDeviceName+" Turned "+strOnOff
+
+                        var room_state = sharedPref.getInt("room${roomIndex}state", -1)
+                        roomObj = db.getRoomObj(roomIndex)
+                        if (roomIndex != -1) roomObj.updateState(room_state)
+                        when(strDeviceName){
+                            "light" ->{
+                                roomObj.allTurn(roomObj.TYPE_LIGHT ,on)
+                            }
+                            "fan" ->{
+                                roomObj.allTurn(roomObj.TYPE_FAN ,on)
+                            }
+                            "socket" ->{
+                                roomObj.allTurn(roomObj.TYPE_SOCKET ,on)
+                            }
+                        }
+                        room_state = roomObj.state
+
+                        val email = sharedPref.getString("email", "")!!
+                        val token = sharedPref.getString("token", "")!!
+                        val params = "email=${email}&token=${token}&room_index=${roomIndex}&state=${room_state}"
+                        setRoomState().execute(params)
+                        with (sharedPref.edit()) {
+                            putInt("room${roomIndex}state", room_state)
+                            commit()
+                        }
+
                     }
                     else
                         doToast("Sorry unable to understand.(err1))")
@@ -147,4 +189,57 @@ class home : AppCompatActivity() {
 
 
     }
+
+
+    inner class setRoomState : AsyncTask<String, String, String>() {
+        override fun doInBackground(vararg params: String): String? {
+            val url: URL
+            val httpURLConnection: HttpURLConnection
+            val outputStreamWriter: OutputStreamWriter
+            val inputStreamReader: InputStreamReader
+            val bufferedReader: BufferedReader
+            var stringFromServer: String
+            try {
+                url = URL("https://iothh.000webhostapp.com/api/setroomstate")
+                httpURLConnection = url.openConnection() as HttpURLConnection
+                httpURLConnection.requestMethod = "POST"
+                httpURLConnection.setRequestProperty(
+                    "Content-Type",
+                    "application/x-www-form-urlencoded"
+                )
+                outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
+                outputStreamWriter.write(params[0])
+                outputStreamWriter.flush()
+                outputStreamWriter.close()
+                inputStreamReader = InputStreamReader(httpURLConnection.inputStream)
+                bufferedReader = BufferedReader(inputStreamReader)
+                stringFromServer = bufferedReader.readLine()
+                inputStreamReader.close()
+                bufferedReader.close()
+                return stringFromServer
+            } catch (e: MalformedURLException) {
+                e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            return null
+
+        }
+
+
+        override fun onPostExecute(string: String?) {
+            if (string == null) doToast("No Response") else {
+                if (string == "ok"){
+                    doToast(updateStr)
+                }
+                else{
+                    doToast("Update failed.")
+                }
+            }
+
+        }
+
+    }
+
+
 }
