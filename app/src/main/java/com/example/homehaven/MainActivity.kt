@@ -176,6 +176,8 @@ import java.net.URL
                      "Content-Type",
                      "application/x-www-form-urlencoded"
                  )
+                 httpURLConnection.connectTimeout = 1000
+                 httpURLConnection.readTimeout = 1000
                  outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
                  outputStreamWriter.write(params[0])
                  outputStreamWriter.flush()
@@ -197,7 +199,20 @@ import java.net.URL
 
 
          override fun onPostExecute(string: String?) {
-             if (string == null) doToast("No Response") else {
+             if (string == null) {
+                 doToast("Login Failed")
+
+                 val failedCount = sharedPref.getInt("failedcount", 0)
+                 with (sharedPref.edit()) {
+                     putInt("failedcount", failedCount+1)
+                     commit()
+                 }
+
+                 if (failedCount < 5)
+                     goToHome()
+                 else
+                     doToast("Please try again")
+             } else {
                  when (string) {
                      "invalid" -> {
                          doToast("Please Login")

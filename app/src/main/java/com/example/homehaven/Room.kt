@@ -29,6 +29,10 @@ class Room : AppCompatActivity() {
     private lateinit var roomObj:roomClass
     private lateinit var sharedPref:SharedPreferences
     private var room_index = 0
+    private var room_state = 0
+    private var email = ""
+    private var token = ""
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +47,7 @@ class Room : AppCompatActivity() {
         dimdev = findViewById(R.id.includedim)
 
         sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)?:return
-        val room_state = sharedPref.getInt("room${room_index}state", -1)
+        room_state = sharedPref.getInt("room${room_index}state", -1)
 
         db = dataStore(applicationContext)
 
@@ -52,12 +56,13 @@ class Room : AppCompatActivity() {
 
         title.text = roomObj.name
 
-        val email = sharedPref.getString("email", "")
-        val token = sharedPref.getString("token", "")!!
+        email = sharedPref.getString("email", "")!!
+        token = sharedPref.getString("token", "")!!
         val params = "email=${email}&token=${token}&room_index=${room_index}"
         getRoomState().execute(params);
 
         setState()
+        addListensers()
         setRoom()
 
     }
@@ -70,6 +75,100 @@ class Room : AppCompatActivity() {
         dev4.findViewById<Switch>(R.id.on_off_switch).isChecked = roomObj.device4_state
         dimdev.findViewById<Switch>(R.id.on_off_switch).isChecked = roomObj.devicedim_state
         dimdev.findViewById<SeekBar>(R.id.dim_seekBar).progress = roomObj.devicedim_level
+    }
+
+    fun addListensers(){
+        dev1.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(
+            CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) room_state += 128
+                else room_state -=128
+                roomObj.updateState(room_state)
+                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                setRoomState().execute(params)
+                with (sharedPref.edit()) {
+                    putInt("room${room_index}state", room_state)
+                    commit()
+                }
+                //doToast(""+room_state)
+            }
+        )
+        dev2.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(
+            CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) room_state += 64
+                else room_state -= 64
+                roomObj.updateState(room_state)
+                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                setRoomState().execute(params)
+                with (sharedPref.edit()) {
+                    putInt("room${room_index}state", room_state)
+                    commit()
+                }
+                //doToast(""+room_state)
+            }
+        )
+        dev3.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(
+            CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) room_state += 32
+                else room_state -= 32
+                roomObj.updateState(room_state)
+                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                setRoomState().execute(params)
+                with (sharedPref.edit()) {
+                    putInt("room${room_index}state", room_state)
+                    commit()
+                }
+                //doToast(""+room_state)
+            }
+        )
+        dev4.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(
+            CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) room_state += 16
+                else room_state -= 16
+                roomObj.updateState(room_state)
+                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                setRoomState().execute(params)
+                with (sharedPref.edit()) {
+                    putInt("room${room_index}state", room_state)
+                    commit()
+                }
+                //doToast(""+room_state)
+            }
+        )
+        dimdev.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(
+            CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) room_state += 8
+                else room_state -= 8
+                roomObj.updateState(room_state)
+                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                setRoomState().execute(params)
+                with (sharedPref.edit()) {
+                    putInt("room${room_index}state", room_state)
+                    commit()
+                }
+                //doToast(""+room_state)
+            }
+        )
+        dimdev.findViewById<SeekBar>(R.id.dim_seekBar).setOnSeekBarChangeListener( object : SeekBar.OnSeekBarChangeListener {
+
+            override fun onProgressChanged(seekBar: SeekBar, i: Int, b: Boolean) {
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                room_state = (room_state and 248)+ seekBar.progress
+                roomObj.updateState(room_state)
+                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                setRoomState().execute(params)
+                with (sharedPref.edit()) {
+                    putInt("room${room_index}state", room_state)
+                    commit()
+                }
+                //doToast(""+room_state)
+            }
+        }
+        )
     }
 
     fun setRoom(){
@@ -210,7 +309,7 @@ class Room : AppCompatActivity() {
                 if (string.length == 3){
                     val code = string.toInt();
                     if (code==-10) doToast("State fetch Failed")
-                    else if (code > 0 && code <256 ) {
+                    else if (code >= 0 && code <256 ) {
                         //doToast("State  :" + string)
                         roomObj.updateState(code)
                         setState()
@@ -219,7 +318,7 @@ class Room : AppCompatActivity() {
                             commit()
                         }
                     }
-                    else doToast("false state")
+                    else doToast("false state :"+code)
 
                 }
                 else{
@@ -227,7 +326,56 @@ class Room : AppCompatActivity() {
                 }
             }
 
+        }
+
+    }
+    inner class setRoomState : AsyncTask<String,String, String>() {
+        override fun doInBackground(vararg params: String): String? {
+            val url: URL
+            val httpURLConnection: HttpURLConnection
+            val outputStreamWriter: OutputStreamWriter
+            val inputStreamReader: InputStreamReader
+            val bufferedReader: BufferedReader
+            var stringFromServer: String
+            try {
+                url = URL("https://iothh.000webhostapp.com/api/setroomstate")
+                httpURLConnection = url.openConnection() as HttpURLConnection
+                httpURLConnection.requestMethod = "POST"
+                httpURLConnection.setRequestProperty(
+                    "Content-Type",
+                    "application/x-www-form-urlencoded"
+                )
+                outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
+                outputStreamWriter.write(params[0])
+                outputStreamWriter.flush()
+                outputStreamWriter.close()
+                inputStreamReader = InputStreamReader(httpURLConnection.inputStream)
+                bufferedReader = BufferedReader(inputStreamReader)
+                stringFromServer = bufferedReader.readLine()
+                inputStreamReader.close()
+                bufferedReader.close()
+                return stringFromServer
+            } catch (e: MalformedURLException) {
+                e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            return null
+
+        }
+
+
+        override fun onPostExecute(string: String?) {
+            if (string == null) doToast("No Response") else {
+                if (string == "ok"){
+                    doToast("Updated")
+                }
+                else{
+                    doToast("Update failed.")
+                }
             }
 
         }
+
+    }
 }
