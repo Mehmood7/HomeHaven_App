@@ -69,7 +69,7 @@ import java.net.URL
      fun goToHome(){
          val homeScreen = Intent(
              this,
-             home::class.java
+             drawerActivity::class.java
          )
          homeScreen.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
          startActivity(homeScreen)
