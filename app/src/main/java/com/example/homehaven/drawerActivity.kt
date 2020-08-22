@@ -1,6 +1,9 @@
 package com.example.homehaven
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
+import android.widget.Toast
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
@@ -12,10 +15,13 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import com.example.homehaven.ui.gallery.homeGallery
 
-class drawerActivity : AppCompatActivity() {
+class drawerActivity : AppCompatActivity(), homeGallery {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var db:dataStore
+    private lateinit var sharedPref: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,8 +43,23 @@ class drawerActivity : AppCompatActivity() {
             R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_network), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+
+        sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)?:return
+        db = dataStore(applicationContext)
     }
 
+    override fun getDatastore(): dataStore {
+        return db;
+    }
+
+    override fun getSharedPref(): SharedPreferences {
+        return sharedPref;
+    }
+
+    override fun doToast(str:String){
+        Toast.makeText(applicationContext,str, Toast.LENGTH_SHORT).show();
+    }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.drawer, menu)

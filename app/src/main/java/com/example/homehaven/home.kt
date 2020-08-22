@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.homehaven.ui.gallery.homeGallery
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -31,7 +32,7 @@ private lateinit var roomObj:roomClass
 private lateinit var sharedPref: SharedPreferences
 private var updateStr = ""
 
-class home : AppCompatActivity() {
+class home : AppCompatActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
