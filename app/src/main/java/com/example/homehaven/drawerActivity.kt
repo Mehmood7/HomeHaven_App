@@ -3,25 +3,31 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import com.example.homehaven.ui.gallery.homeGallery
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
+import com.squareup.picasso.Picasso
 
 class drawerActivity : AppCompatActivity(), homeGallery {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var db:dataStore
     private lateinit var sharedPref: SharedPreferences
+    private lateinit var dpView: ImageView
+    private lateinit var nameView: TextView
+    private lateinit var mailView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +42,10 @@ class drawerActivity : AppCompatActivity(), homeGallery {
         }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
+        val hView =  navView.getHeaderView(0)
+        dpView = hView.findViewById(R.id.nav_dp_iv)
+        nameView = hView.findViewById(R.id.nav_name_tv)
+        mailView = hView.findViewById(R.id.nav_mail_tv)
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -44,9 +54,24 @@ class drawerActivity : AppCompatActivity(), homeGallery {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-
         sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)?:return
         db = dataStore(applicationContext)
+
+        val email = sharedPref.getString("email", "")
+        val name = sharedPref.getString("name", "")
+
+        val imageUri = "https://homehaven.website/api/getimage?email=" + email
+        Picasso.get().isLoggingEnabled = true
+        Picasso.get().load(imageUri).resize(150, 150)
+            .placeholder(R.mipmap.ic_launcher)
+            .error(R.mipmap.ic_launcher)
+            .transform(PicassoCircleTransformation())
+            .centerCrop().into(dpView)
+
+        mailView.text = email
+        nameView.text = name
+
+
     }
 
     override fun getDatastore(): dataStore {
@@ -70,4 +95,5 @@ class drawerActivity : AppCompatActivity(), homeGallery {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
 }

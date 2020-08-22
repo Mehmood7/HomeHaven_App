@@ -39,11 +39,11 @@ import java.net.URL
         loginbtn = findViewById(R.id.login_btn)
         emailtxt = findViewById(R.id.email_et)
         passwtxt = findViewById(R.id.passw_et)
-        emaillbl = findViewById(R.id.textView)
+        emaillbl = findViewById(R.id.nav_mail_tv)
         passwlbl = findViewById(R.id.textView2)
 
         val email = sharedPref.getString("email", "")
-        val token = sharedPref.getString("token", "")!!
+        val token = sharedPref.getString("token", "")
         emailtxt.setText(email)
 
         if (email != "" && token != "") {
@@ -100,7 +100,7 @@ import java.net.URL
              val bufferedReader: BufferedReader
              var stringFromServer: String
              try {
-                 url = URL("https://iothh.000webhostapp.com/api/applogin")
+                 url = URL("https://homehaven.website/api/applogin")
                  httpURLConnection = url.openConnection() as HttpURLConnection
                  httpURLConnection.requestMethod = "POST"
                  httpURLConnection.setRequestProperty(
@@ -135,12 +135,15 @@ import java.net.URL
                      "ok" -> {
                          doToast("Login Successful")
                          val token = string.substring(2,14)
+                         val room_count = string.get(14).toInt()-48
+                         var rooms = string.substringAfter(':').split(':');
+                         val name = rooms.last()
                          with(sharedPref.edit()) {
                              putString("token", token)
+                             putString("name", name)
                              commit()
                          }
-                         val room_count = string.get(14).toInt()-48
-                         val rooms = string.substringAfter(':').split(':');
+                         rooms = rooms.dropLast(1)
                          val db = dataStore(applicationContext);
                          db.clearRoom()
                          for (room in rooms){
@@ -169,7 +172,7 @@ import java.net.URL
              val bufferedReader: BufferedReader
              var stringFromServer: String
              try {
-                 url = URL("https://iothh.000webhostapp.com/api/verifytoken")
+                 url = URL("https://homehaven.website/api/verifytoken")
                  httpURLConnection = url.openConnection() as HttpURLConnection
                  httpURLConnection.requestMethod = "POST"
                  httpURLConnection.setRequestProperty(

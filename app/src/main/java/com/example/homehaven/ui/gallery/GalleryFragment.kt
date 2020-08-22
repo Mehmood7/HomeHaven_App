@@ -78,4 +78,6 @@ class GalleryFragment : Fragment() {
       throw RuntimeException( "not of type");
     }
   }
+
+
 }
