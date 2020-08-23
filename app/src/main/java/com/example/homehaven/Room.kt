@@ -62,9 +62,19 @@ class Room : AppCompatActivity() {
         getRoomState().execute(params);
 
         setState()
-        addListensers()
         setRoom()
+        enable(false)
+        addListensers()
 
+    }
+
+    fun enable(en:Boolean){
+        dev1.findViewById<Switch>(R.id.on_off_switch).isEnabled = en
+        dev2.findViewById<Switch>(R.id.on_off_switch).isEnabled = en
+        dev3.findViewById<Switch>(R.id.on_off_switch).isEnabled = en
+        dev4.findViewById<Switch>(R.id.on_off_switch).isEnabled = en
+        dimdev.findViewById<Switch>(R.id.on_off_switch).isEnabled = en
+        dimdev.findViewById<SeekBar>(R.id.dim_seekBar).isEnabled = en
     }
 
     fun setState(){
@@ -305,6 +315,7 @@ class Room : AppCompatActivity() {
 
 
         override fun onPostExecute(string: String?) {
+            enable(true)
             if (string == null) doToast("No Response") else {
                 if (string.length == 3){
                     val code = string.toInt();

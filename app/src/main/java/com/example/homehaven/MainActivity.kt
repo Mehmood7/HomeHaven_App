@@ -54,6 +54,7 @@ import java.net.URL
 
         loginbtn.setOnClickListener {
             val creds = "email=${emailtxt.text}&password=${passwtxt.text}"
+            enableLogin(false)
             with (sharedPref.edit()) {
                 putString("email", "${emailtxt.text}")
                 commit()
@@ -73,6 +74,9 @@ import java.net.URL
          )
          homeScreen.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
          startActivity(homeScreen)
+     }
+     fun enableLogin(en:Boolean){
+         loginbtn.isEnabled = en
      }
 
      fun hide(){
@@ -128,6 +132,7 @@ import java.net.URL
 
 
          override fun onPostExecute(string: String?) {
+             enableLogin(true)
              if (string == null) doToast("No Response") else {
                  val code = string.substring(0,2);
                  when (code) {
@@ -139,6 +144,7 @@ import java.net.URL
                          var rooms = string.substringAfter(':').split(':');
                          val name = rooms.last()
                          with(sharedPref.edit()) {
+                             putInt("failedcount", 0)
                              putString("token", token)
                              putString("name", name)
                              commit()
@@ -213,8 +219,10 @@ import java.net.URL
 
                  if (failedCount < 5)
                      goToHome()
-                 else
+                 else{
                      doToast("Please try again")
+                     show()
+                 }
              } else {
                  when (string) {
                      "invalid" -> {
