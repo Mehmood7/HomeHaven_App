@@ -13,7 +13,6 @@ import android.widget.ImageView
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.homehaven.ui.gallery.homeGallery
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

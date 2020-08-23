@@ -1,4 +1,4 @@
-package com.example.homehaven.ui.gallery
+package com.example.homehaven.ui.device_control
 
 import android.content.Context
 import android.content.Intent
@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ImageView
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
@@ -23,9 +22,9 @@ interface homeGallery{
   fun doToast(str:String);
 }
 
-class GalleryFragment : Fragment() {
+class DeviceControlFragment : Fragment() {
   private lateinit var mhomeGallery: homeGallery;
-  private lateinit var galleryViewModel: GalleryViewModel
+  private lateinit var galleryViewModel: DeviceControlViewModel
   private lateinit var roomList: ListView
   private lateinit var roomNames: Vector<String>
   private lateinit var db:dataStore
@@ -38,12 +37,9 @@ class GalleryFragment : Fragment() {
     savedInstanceState: Bundle?
   ): View? {
     galleryViewModel =
-    ViewModelProviders.of(this).get(GalleryViewModel::class.java)
-    val root = inflater.inflate(R.layout.fragment_gallery, container, false)
-    val textView: TextView = root.findViewById(R.id.text_gallery)
-    galleryViewModel.text.observe(viewLifecycleOwner, Observer {
-      textView.text = it
-    })
+    ViewModelProviders.of(this).get(DeviceControlViewModel::class.java)
+    val root = inflater.inflate(R.layout.fragment_device_control, container, false)
+
     roomList = root.findViewById(R.id.rooms_list)
 
     sharedPref = mhomeGallery.getSharedPref()

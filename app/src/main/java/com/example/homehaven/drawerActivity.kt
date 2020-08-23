@@ -16,7 +16,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.homehaven.ui.gallery.homeGallery
+import com.example.homehaven.ui.device_control.homeGallery
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
@@ -56,7 +56,7 @@ class drawerActivity : AppCompatActivity(), homeGallery {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(setOf(
-            R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow, R.id.nav_network), drawerLayout)
+            R.id.nav_home, R.id.nav_device_control, R.id.nav_slideshow, R.id.nav_network), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 

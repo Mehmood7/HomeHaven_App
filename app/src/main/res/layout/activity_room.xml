@@ -59,10 +59,13 @@
 
     <TextView
         android:id="@+id/room_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:background="@color/colorAccent"
+        android:padding="10px"
         android:text="@string/roomString"
+        android:textAlignment="center"
+        android:textColor="@color/design_default_color_background"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
