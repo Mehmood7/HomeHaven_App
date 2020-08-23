@@ -21,4 +21,9 @@
             android:icon="@drawable/ic_network"
             android:title="@string/menu_network" />
     </group>
+
+    <item
+        android:id="@+id/nav_sign_out"
+        android:icon="@drawable/ic_sign_out"
+        android:title="@string/menu_sign_out" />
 </menu>

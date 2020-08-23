@@ -1,8 +1,10 @@
 package com.example.homehaven
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -28,6 +30,7 @@ class drawerActivity : AppCompatActivity(), homeGallery {
     private lateinit var dpView: ImageView
     private lateinit var nameView: TextView
     private lateinit var mailView: TextView
+    private lateinit var signOut: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +49,9 @@ class drawerActivity : AppCompatActivity(), homeGallery {
         dpView = hView.findViewById(R.id.nav_dp_iv)
         nameView = hView.findViewById(R.id.nav_name_tv)
         mailView = hView.findViewById(R.id.nav_mail_tv)
+        val menuNav:Menu = navView.getMenu();
+        signOut = menuNav.findItem(R.id.nav_sign_out)
+
         val navController = findNavController(R.id.nav_host_fragment)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
@@ -71,6 +77,16 @@ class drawerActivity : AppCompatActivity(), homeGallery {
         mailView.text = email
         nameView.text = name
 
+        signOut.setOnMenuItemClickListener {
+            with (sharedPref.edit()) {
+                putString("token", "")
+                commit()
+            }
+            val i = Intent(this, MainActivity::class.java)
+            i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(i)
+            true
+        }
 
     }
 
