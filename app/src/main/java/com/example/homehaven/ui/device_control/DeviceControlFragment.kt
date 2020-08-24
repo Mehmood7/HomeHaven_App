@@ -3,6 +3,7 @@ package com.example.homehaven.ui.device_control
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,11 +25,10 @@ interface homeGallery{
 
 class DeviceControlFragment : Fragment() {
   private lateinit var mhomeGallery: homeGallery;
-  private lateinit var galleryViewModel: DeviceControlViewModel
+  private lateinit var deviceControlViewModel: DeviceControlViewModel
   private lateinit var roomList: ListView
   private lateinit var roomNames: Vector<String>
   private lateinit var db:dataStore
-  private lateinit var roomObj: roomClass
   private lateinit var sharedPref: SharedPreferences
 
   override fun onCreateView(
@@ -36,7 +36,7 @@ class DeviceControlFragment : Fragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    galleryViewModel =
+    deviceControlViewModel =
     ViewModelProviders.of(this).get(DeviceControlViewModel::class.java)
     val root = inflater.inflate(R.layout.fragment_device_control, container, false)
 
@@ -45,7 +45,7 @@ class DeviceControlFragment : Fragment() {
     sharedPref = mhomeGallery.getSharedPref()
     db = mhomeGallery.getDatastore()
     roomNames = db.getRoomNames()!!
-    var roomsAdaptor = roomAdapter(galleryViewModel.getApplication(), roomNames)
+    var roomsAdaptor = roomAdapter(deviceControlViewModel.getApplication(), roomNames, Color.BLACK)
     roomList.setAdapter(roomsAdaptor)
     roomList.setOnItemClickListener(
       object : AdapterView.OnItemClickListener {

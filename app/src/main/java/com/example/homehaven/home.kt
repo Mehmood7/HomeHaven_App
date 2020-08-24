@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
 import android.speech.RecognizerIntent
@@ -44,7 +45,7 @@ class home : AppCompatActivity(){
         db = dataStore(applicationContext)
 
         roomNames = db.getRoomNames()!!
-        var roomsAdaptor = roomAdapter(this, roomNames)
+        var roomsAdaptor = roomAdapter(this, roomNames, Color.BLACK)
         roomList.setAdapter(roomsAdaptor)
         roomList.setOnItemClickListener(
             object : AdapterView.OnItemClickListener {

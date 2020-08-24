@@ -27,4 +27,6 @@
     <string name="watts_string">Watts</string>
     <string name="power_consumption_string">Power Consumption</string>
     <string name="last_month_bill_string">Last Month Bill</string>
+    <string name="night_mode_rooms">Night Mode Rooms</string>
+    <string name="rooms">Rooms</string>
 </resources>
