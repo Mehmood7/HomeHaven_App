@@ -1,4 +1,4 @@
-package com.example.homehaven.ui.home
+package com.example.homehaven.ui.usage_and_prediction
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -13,9 +13,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.homehaven.R
-import com.example.homehaven.dataStore
 import com.example.homehaven.ui.device_control.homeGallery
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_usage_and_prediction.*
 import pl.pawelkleczkowski.customgauge.CustomGauge
 import java.io.BufferedReader
 import java.io.IOException
@@ -26,12 +25,11 @@ import java.net.MalformedURLException
 import java.net.URL
 import java.text.DecimalFormat
 import kotlin.math.ceil
-import kotlin.math.roundToLong
 
-class HomeFragment : Fragment() {
+class UsageAndPredictionFragment : Fragment() {
 
   private lateinit var mhomeGallery: homeGallery;
-  private lateinit var homeViewModel: HomeViewModel
+  private lateinit var usageAndPredictionViewModel: UsageAndPredictionViewModel
   private lateinit var consumpMeter: CustomGauge
   private lateinit var consumpText: TextView
   private lateinit var billPredictionTV: TextView
@@ -45,9 +43,9 @@ class HomeFragment : Fragment() {
     container: ViewGroup?,
     savedInstanceState: Bundle?
   ): View? {
-    homeViewModel =
-    ViewModelProviders.of(this).get(HomeViewModel::class.java)
-    val root = inflater.inflate(R.layout.fragment_home, container, false)
+    usageAndPredictionViewModel =
+    ViewModelProviders.of(this).get(UsageAndPredictionViewModel::class.java)
+    val root = inflater.inflate(R.layout.fragment_usage_and_prediction, container, false)
 
 
     sharedPref = mhomeGallery.getSharedPref()

@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_usage_and_prediction">
 
     <fragment
-        android:id="@+id/nav_home"
-        android:name="com.example.homehaven.ui.home.HomeFragment"
-        android:label="@string/menu_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/nav_usage_and_prediction"
+        android:name="com.example.homehaven.ui.usage_and_prediction.UsageAndPredictionFragment"
+        android:label="@string/menu_usage_and_prediction"
+        tools:layout="@layout/fragment_usage_and_prediction" />
 
     <fragment
         android:id="@+id/nav_device_control"
@@ -18,14 +18,14 @@
         tools:layout="@layout/fragment_device_control" />
 
     <fragment
-        android:id="@+id/nav_network"
-        android:name="com.example.homehaven.ui.network.NetworkFragment"
-        android:label="@string/menu_network"
-        tools:layout="@layout/fragment_network" />
+        android:id="@+id/nav_settings"
+        android:name="com.example.homehaven.ui.settings.SettingsFragment"
+        android:label="@string/menu_settings"
+        tools:layout="@layout/fragment_settings" />
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.homehaven.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_night_mode_config"
+        android:name="com.example.homehaven.ui.night_mode_config.NightModeConfigFragment"
+        android:label="@string/menu_night_mode_config"
+        tools:layout="@layout/fragment_night_mode_config" />
 </navigation>

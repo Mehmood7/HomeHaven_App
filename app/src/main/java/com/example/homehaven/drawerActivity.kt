@@ -56,7 +56,7 @@ class drawerActivity : AppCompatActivity(), homeGallery {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(setOf(
-            R.id.nav_home, R.id.nav_device_control, R.id.nav_slideshow, R.id.nav_network), drawerLayout)
+            R.id.nav_usage_and_prediction, R.id.nav_device_control, R.id.nav_night_mode_config, R.id.nav_settings), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
