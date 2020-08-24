@@ -22,10 +22,6 @@ class NetworkFragment : Fragment() {
     networkViewModel =
     ViewModelProviders.of(this).get(NetworkViewModel::class.java)
     val root = inflater.inflate(R.layout.fragment_home, container, false)
-    val textView: TextView = root.findViewById(R.id.text_home)
-    networkViewModel.text.observe(viewLifecycleOwner, Observer {
-      textView.text = it
-    })
     return root
   }
 }

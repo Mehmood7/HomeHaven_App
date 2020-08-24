@@ -17,4 +17,13 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_network">Network</string>
     <string name="menu_sign_out">Sign Out</string>
+    <string name="zero_string">000</string>
+    <string name="electricity__being_consumed">Electricity currently being consumed</string>
+    <string name="currency">PKR</string>
+    <string name="compare">%  compare to previous</string>
+    <string name="bill_prediction_string">Current Month Bill Prediction</string>
+    <string name="bill_predictometer_string">Bill Predictometer</string>
+    <string name="watts_string">Watts</string>
+    <string name="power_consumption_string">Power Consumption</string>
+    <string name="last_month_bill_string">Last Month Bill</string>
 </resources>

@@ -185,7 +185,7 @@ class Room : AppCompatActivity() {
 
         val lightBitmap:Bitmap? = getBitmapFromAssets("icons/bulb.png")
         val fanBitmap:Bitmap? = getBitmapFromAssets("icons/fan.png")
-        val plugBitmap:Bitmap? = getBitmapFromAssets("icons/plug.png")
+        val plugBitmap:Bitmap? = getBitmapFromAssets("icons/socket.png")
 
         when(roomObj.device1_type){
             1->{

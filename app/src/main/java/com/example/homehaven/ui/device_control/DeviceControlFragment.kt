@@ -75,5 +75,8 @@ class DeviceControlFragment : Fragment() {
     }
   }
 
-
+  override
+  fun onDetach() {
+    super.onDetach()
+  }
 }
