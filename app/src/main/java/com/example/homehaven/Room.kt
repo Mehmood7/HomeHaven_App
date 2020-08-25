@@ -287,7 +287,7 @@ class Room : AppCompatActivity() {
             val bufferedReader: BufferedReader
             var stringFromServer: String
             try {
-                url = URL("https://iothh.000webhostapp.com/api/getroomstate")
+                url = URL("https://homehaven.website/api/getroomstate")
                 httpURLConnection = url.openConnection() as HttpURLConnection
                 httpURLConnection.requestMethod = "POST"
                 httpURLConnection.setRequestProperty(
@@ -349,7 +349,7 @@ class Room : AppCompatActivity() {
             val bufferedReader: BufferedReader
             var stringFromServer: String
             try {
-                url = URL("https://iothh.000webhostapp.com/api/setroomstate")
+                url = URL("https://homehaven.website/api/setroomstate")
                 httpURLConnection = url.openConnection() as HttpURLConnection
                 httpURLConnection.requestMethod = "POST"
                 httpURLConnection.setRequestProperty(

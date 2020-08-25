@@ -201,7 +201,7 @@ class home : AppCompatActivity(){
             val bufferedReader: BufferedReader
             var stringFromServer: String
             try {
-                url = URL("https://iothh.000webhostapp.com/api/setroomstate")
+                url = URL("https://homehaven.website/api/setroomstate")
                 httpURLConnection = url.openConnection() as HttpURLConnection
                 httpURLConnection.requestMethod = "POST"
                 httpURLConnection.setRequestProperty(
