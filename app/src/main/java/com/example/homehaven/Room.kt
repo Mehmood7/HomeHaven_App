@@ -239,7 +239,7 @@ class Room : AppCompatActivity() {
                 dev1.findViewById<ImageView>(R.id.device_img).setImageBitmap(fanBitmap)
             }
             3->{
-                dev1.findViewById<TextView>(R.id.device_name).text = "Plug"
+                dev1.findViewById<TextView>(R.id.device_name).text = "Socket"
                 dev1.findViewById<ImageView>(R.id.device_img).setImageBitmap(plugBitmap)
             }
             else -> dev1.visibility = View.GONE
@@ -254,7 +254,7 @@ class Room : AppCompatActivity() {
                 dev2.findViewById<ImageView>(R.id.device_img).setImageBitmap(fanBitmap)
             }
             3->{
-                dev2.findViewById<TextView>(R.id.device_name).text = "Plug"
+                dev2.findViewById<TextView>(R.id.device_name).text = "Socket"
                 dev2.findViewById<ImageView>(R.id.device_img).setImageBitmap(plugBitmap)
             }
             else -> dev2.visibility = View.GONE
@@ -269,7 +269,7 @@ class Room : AppCompatActivity() {
                 dev3.findViewById<ImageView>(R.id.device_img).setImageBitmap(fanBitmap)
             }
             3->{
-                dev3.findViewById<TextView>(R.id.device_name).text = "Plug"
+                dev3.findViewById<TextView>(R.id.device_name).text = "Socket"
                 dev3.findViewById<ImageView>(R.id.device_img).setImageBitmap(plugBitmap)
             }
             else -> dev3.visibility = View.GONE
@@ -284,7 +284,7 @@ class Room : AppCompatActivity() {
                 dev4.findViewById<ImageView>(R.id.device_img).setImageBitmap(fanBitmap)
             }
             3->{
-                dev4.findViewById<TextView>(R.id.device_name).text = "Plug"
+                dev4.findViewById<TextView>(R.id.device_name).text = "Socket"
                 dev4.findViewById<ImageView>(R.id.device_img).setImageBitmap(plugBitmap)
             }
             else -> dev4.visibility = View.GONE
@@ -299,7 +299,7 @@ class Room : AppCompatActivity() {
                 dimdev.findViewById<ImageView>(R.id.device_img).setImageBitmap(fanBitmap)
             }
             3->{
-                dimdev.findViewById<TextView>(R.id.device_name).text = "Plug"
+                dimdev.findViewById<TextView>(R.id.device_name).text = "Socket"
                 dimdev.findViewById<ImageView>(R.id.device_img).setImageBitmap(plugBitmap)
             }
             else -> dimdev.visibility = View.GONE
