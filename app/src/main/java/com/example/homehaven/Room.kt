@@ -1,17 +1,19 @@
 package com.example.homehaven
 
-import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Layout
+import android.speech.RecognizerIntent
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -19,6 +21,7 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
+import java.util.*
 
 class Room : AppCompatActivity() {
 
@@ -30,16 +33,20 @@ class Room : AppCompatActivity() {
     private lateinit var dimdev:View
     private lateinit var db:dataStore
     private lateinit var roomObj:roomClass
+    private lateinit var voice_roomObj:roomClass
+    private lateinit var roomNames:Vector<String>
     private lateinit var roomLayout: ConstraintLayout
     private lateinit var sharedPref:SharedPreferences
     private var room_index = 0
+    private var voice_room_index = 0
     private var room_state = 0
+    private var voice_room_state = 0
     private var email = ""
     private var token = ""
+    private var updateStr = ""
     private var night_mode = false
 
 
-    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room)
@@ -54,12 +61,18 @@ class Room : AppCompatActivity() {
         dimdev = findViewById(R.id.includedim)
         roomLayout = findViewById(R.id.room_constarint_LO)
 
+        val fab: FloatingActionButton = findViewById(R.id.fab)
+        fab.setOnClickListener { view ->
+            voiceCommand()
+        }
+
         sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)?:return
         if (night_mode)  room_state = sharedPref.getInt("night_room${room_index}state", -1)
         else room_state = sharedPref.getInt("room${room_index}state", -1)
         if (room_state > 255 || room_state < 0) room_state = 0;
 
         db = dataStore(applicationContext)
+        roomNames = db.getRoomNames()!!
 
         roomObj = db.getRoomObj(room_index)
         if (room_state != -1) roomObj.updateState(room_state)
@@ -101,7 +114,7 @@ class Room : AppCompatActivity() {
         dimdev.findViewById<SeekBar>(R.id.dim_seekBar).progress = roomObj.devicedim_level
     }
 
-    fun addListensers(){
+    fun addListeners(){
         dev1.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(
             CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked) room_state += 128
@@ -199,6 +212,15 @@ class Room : AppCompatActivity() {
             }
         }
         )
+    }
+
+    fun removeListeners(){
+        dev1.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(null)
+        dev2.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(null)
+        dev3.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(null)
+        dev4.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(null)
+        dimdev.findViewById<Switch>(R.id.on_off_switch).setOnCheckedChangeListener(null)
+        dimdev.findViewById<SeekBar>(R.id.dim_seekBar).setOnSeekBarChangeListener(null)
     }
 
     fun setRoom(){
@@ -359,7 +381,7 @@ class Room : AppCompatActivity() {
                 }
             }
             enable(true)
-            addListensers()
+            addListeners()
 
         }
 
@@ -405,6 +427,186 @@ class Room : AppCompatActivity() {
             if (string == null) doToast("No Response") else {
                 if (string == "ok"){
                     doToast("Updated")
+                }
+                else{
+                    doToast("Update failed.")
+                }
+            }
+
+        }
+
+    }
+
+    fun voiceCommand(){
+        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+
+        // Required extra
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+        if (intent.resolveActivity(packageManager) != null)
+            startActivityForResult(intent, 72);
+        else
+            doToast("Speech not supported on this device.")
+
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK && requestCode == 72  && data != null){
+            val resString = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)
+            voice_room_index = -1
+            var strRoomname = ""
+            var strOnOff = ""
+            var strDeviceName = ""
+            for ((i, room) in roomNames.withIndex()){
+                val roomName = room.replace('-',' ')
+                var j = 0
+                for (str in resString){
+                    if (str.contains(roomName, true)) {
+                        voice_room_index = i
+                        strRoomname = roomName
+                    }
+                    //doToast(str)
+                    j++
+                }
+            }
+
+            if(voice_room_index != -1){
+                //doToast(roomNames.get(roomIndex))
+                var j = 0
+                var light = false
+                var fan = false
+                var socket = false
+
+                for (str in resString){
+                    if (str.contains("light", true)) {
+                        light = true
+                        strDeviceName = "light"
+                    }
+                    if (str.contains("fan", true)) {
+                        fan = true
+                        strDeviceName = "fan"
+                    }
+                    if (str.contains("socket", true)) {
+                        socket = true
+                        strDeviceName = "socket"
+                    }
+                    //doToast(str)
+                    j++
+                }
+
+                // ensures only one is true
+                var confused = !((light xor socket xor fan) xor (light && fan && socket))
+
+                if(!confused){
+                    var on = false
+                    var off = false
+                    for (str in resString){
+                        if (str.plus(" ").contains(" on ", true)) {
+                            on = true
+                            strOnOff = "on"
+                        }
+                        if (str.plus(" ").contains(" off ", true)) {
+                            off = true
+                            strOnOff = "off"
+                        }
+                        //doToast(str)
+                        j++
+                    }
+                    confused = !(on xor off)
+
+                    if (!confused){
+                        updateStr = strRoomname+" "+strDeviceName+" Turned "+strOnOff
+
+                        voice_room_state = sharedPref.getInt("room${voice_room_index}state", -1)
+                        voice_roomObj = db.getRoomObj(voice_room_index)
+                        if (voice_room_index != -1) voice_roomObj.updateState(voice_room_state)
+                        when(strDeviceName){
+                            "light" ->{
+                                voice_roomObj.allTurn(voice_roomObj.TYPE_LIGHT ,on)
+                            }
+                            "fan" ->{
+                                voice_roomObj.allTurn(voice_roomObj.TYPE_FAN ,on)
+                            }
+                            "socket" ->{
+                                voice_roomObj.allTurn(voice_roomObj.TYPE_SOCKET ,on)
+                            }
+                        }
+                        voice_room_state = voice_roomObj.state
+
+                        val email = sharedPref.getString("email", "")!!
+                        val token = sharedPref.getString("token", "")!!
+                        val params = "email=${email}&token=${token}&room_index=${voice_room_index}&state=${voice_room_state}"
+                        setRoomState_voice().execute(params)
+                        with (sharedPref.edit()) {
+                            putInt("room${voice_room_index}state", voice_room_state)
+                            commit()
+                        }
+
+                    }
+                    else
+                        doToast("Sorry unable to understand.(err1))")
+                }
+                else
+                    doToast("Sorry unable to understand.(err0)")
+            }
+            else doToast("Room not found")
+        }
+
+
+    }
+
+
+    inner class setRoomState_voice : AsyncTask<String, String, String>() {
+        override fun doInBackground(vararg params: String): String? {
+            val url: URL
+            val httpURLConnection: HttpURLConnection
+            val outputStreamWriter: OutputStreamWriter
+            val inputStreamReader: InputStreamReader
+            val bufferedReader: BufferedReader
+            var stringFromServer: String
+            try {
+                url = URL("https://homehaven.website/api/setroomstate")
+                httpURLConnection = url.openConnection() as HttpURLConnection
+                httpURLConnection.requestMethod = "POST"
+                httpURLConnection.setRequestProperty(
+                    "Content-Type",
+                    "application/x-www-form-urlencoded"
+                )
+                outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
+                outputStreamWriter.write(params[0])
+                outputStreamWriter.flush()
+                outputStreamWriter.close()
+                inputStreamReader = InputStreamReader(httpURLConnection.inputStream)
+                bufferedReader = BufferedReader(inputStreamReader)
+                stringFromServer = bufferedReader.readLine()
+                inputStreamReader.close()
+                bufferedReader.close()
+                return stringFromServer
+            } catch (e: MalformedURLException) {
+                e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            return null
+
+        }
+
+
+        override fun onPostExecute(string: String?) {
+            if (string == null) doToast("No Response") else {
+                if (string == "ok"){
+                    doToast(updateStr)
+                    if(!night_mode && voice_room_index == room_index){
+                        room_state = voice_room_state
+                        roomObj.updateState(room_state)
+                        removeListeners()
+                        setState()
+                        addListeners()
+                    }
                 }
                 else{
                     doToast("Update failed.")
