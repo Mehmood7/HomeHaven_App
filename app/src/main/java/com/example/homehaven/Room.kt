@@ -1,5 +1,6 @@
 package com.example.homehaven
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Bitmap
@@ -7,8 +8,10 @@ import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Layout
 import android.view.View
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -27,17 +30,21 @@ class Room : AppCompatActivity() {
     private lateinit var dimdev:View
     private lateinit var db:dataStore
     private lateinit var roomObj:roomClass
+    private lateinit var roomLayout: ConstraintLayout
     private lateinit var sharedPref:SharedPreferences
     private var room_index = 0
     private var room_state = 0
     private var email = ""
     private var token = ""
+    private var night_mode = false
 
 
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_room)
         room_index = intent.extras!!.get("room_id") as Int
+        night_mode = intent.extras!!.get("night_mode") as Boolean
 
         title = findViewById(R.id.room_title)
         dev1 = findViewById(R.id.include1)
@@ -45,9 +52,12 @@ class Room : AppCompatActivity() {
         dev3 = findViewById(R.id.include3)
         dev4 = findViewById(R.id.include4)
         dimdev = findViewById(R.id.includedim)
+        roomLayout = findViewById(R.id.room_constarint_LO)
 
         sharedPref = getSharedPreferences("prefs", Context.MODE_PRIVATE)?:return
-        room_state = sharedPref.getInt("room${room_index}state", -1)
+        if (night_mode)  room_state = sharedPref.getInt("night_room${room_index}state", -1)
+        else room_state = sharedPref.getInt("room${room_index}state", -1)
+        if (room_state > 255 || room_state < 0) room_state = 0;
 
         db = dataStore(applicationContext)
 
@@ -56,15 +66,19 @@ class Room : AppCompatActivity() {
 
         title.text = roomObj.name
 
+        if (night_mode){
+            title.setBackgroundColor(resources.getColor(R.color.night_dark))
+            roomLayout.setBackgroundColor(resources.getColor(R.color.night_light))
+        }
+
         email = sharedPref.getString("email", "")!!
         token = sharedPref.getString("token", "")!!
         val params = "email=${email}&token=${token}&room_index=${room_index}"
         getRoomState().execute(params);
 
+        enable(false)
         setState()
         setRoom()
-        enable(false)
-        addListensers()
 
     }
 
@@ -96,7 +110,8 @@ class Room : AppCompatActivity() {
                 val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
-                    putInt("room${room_index}state", room_state)
+                    if (night_mode) putInt("night_room${room_index}state", room_state)
+                    else putInt("room${room_index}state", room_state)
                     commit()
                 }
                 //doToast(""+room_state)
@@ -110,7 +125,8 @@ class Room : AppCompatActivity() {
                 val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
-                    putInt("room${room_index}state", room_state)
+                    if (night_mode) putInt("night_room${room_index}state", room_state)
+                    else putInt("room${room_index}state", room_state)
                     commit()
                 }
                 //doToast(""+room_state)
@@ -124,7 +140,8 @@ class Room : AppCompatActivity() {
                 val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
-                    putInt("room${room_index}state", room_state)
+                    if (night_mode) putInt("night_room${room_index}state", room_state)
+                    else putInt("room${room_index}state", room_state)
                     commit()
                 }
                 //doToast(""+room_state)
@@ -138,7 +155,8 @@ class Room : AppCompatActivity() {
                 val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
-                    putInt("room${room_index}state", room_state)
+                    if (night_mode) putInt("night_room${room_index}state", room_state)
+                    else putInt("room${room_index}state", room_state)
                     commit()
                 }
                 //doToast(""+room_state)
@@ -152,7 +170,8 @@ class Room : AppCompatActivity() {
                 val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
-                    putInt("room${room_index}state", room_state)
+                    if (night_mode) putInt("night_room${room_index}state", room_state)
+                    else putInt("room${room_index}state", room_state)
                     commit()
                 }
                 //doToast(""+room_state)
@@ -172,7 +191,8 @@ class Room : AppCompatActivity() {
                 val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
-                    putInt("room${room_index}state", room_state)
+                    if (night_mode) putInt("night_room${room_index}state", room_state)
+                    else putInt("room${room_index}state", room_state)
                     commit()
                 }
                 //doToast(""+room_state)
@@ -287,7 +307,8 @@ class Room : AppCompatActivity() {
             val bufferedReader: BufferedReader
             var stringFromServer: String
             try {
-                url = URL("https://homehaven.website/api/getroomstate")
+                if(night_mode) url = URL("https://homehaven.website/api/getnightroomstate")
+                else url = URL("https://homehaven.website/api/getroomstate")
                 httpURLConnection = url.openConnection() as HttpURLConnection
                 httpURLConnection.requestMethod = "POST"
                 httpURLConnection.setRequestProperty(
@@ -315,17 +336,18 @@ class Room : AppCompatActivity() {
 
 
         override fun onPostExecute(string: String?) {
-            enable(true)
             if (string == null) doToast("No Response") else {
                 if (string.length == 3){
                     val code = string.toInt();
                     if (code==-10) doToast("State fetch Failed")
                     else if (code >= 0 && code <256 ) {
                         //doToast("State  :" + string)
+                        room_state = code
                         roomObj.updateState(code)
                         setState()
                         with (sharedPref.edit()) {
-                            putInt("room${room_index}state", code)
+                            if (night_mode) putInt("night_room${room_index}state", code)
+                            else putInt("room${room_index}state", code)
                             commit()
                         }
                     }
@@ -336,6 +358,8 @@ class Room : AppCompatActivity() {
                     doToast("Invalid state.")
                 }
             }
+            enable(true)
+            addListensers()
 
         }
 
@@ -349,7 +373,8 @@ class Room : AppCompatActivity() {
             val bufferedReader: BufferedReader
             var stringFromServer: String
             try {
-                url = URL("https://homehaven.website/api/setroomstate")
+                if(night_mode) url = URL("https://homehaven.website/api/setnightroomstate")
+                else url = URL("https://homehaven.website/api/setroomstate")
                 httpURLConnection = url.openConnection() as HttpURLConnection
                 httpURLConnection.requestMethod = "POST"
                 httpURLConnection.setRequestProperty(

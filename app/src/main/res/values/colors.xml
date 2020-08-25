@@ -5,4 +5,6 @@
     <color name="colorAccent">#0BCDEF</color>
     <color name="homehav">#00a3e8</color>
     <color name="_light_hh">#ff00e3f8</color>
+    <color name="night_dark">#ff424242</color>
+    <color name="night_light">#42000000</color>
 </resources>

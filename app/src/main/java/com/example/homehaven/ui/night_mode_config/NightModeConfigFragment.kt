@@ -55,6 +55,7 @@ class NightModeConfigFragment : Fragment() {
         ) {
           val roomIntent = Intent(activity, Room::class.java)
           roomIntent.putExtra("room_id", position)
+          roomIntent.putExtra("night_mode", true)
           startActivity(roomIntent)
         }
       })
