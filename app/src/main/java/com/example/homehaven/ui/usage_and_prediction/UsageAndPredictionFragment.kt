@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -36,6 +37,7 @@ class UsageAndPredictionFragment : Fragment() {
   private lateinit var billCompareTV: TextView
   private lateinit var previousBillTV: TextView
   private lateinit var powerCaompareTV: TextView
+  private lateinit var refreshButton: Button
   private lateinit var sharedPref: SharedPreferences
 
   override fun onCreateView(
@@ -55,11 +57,18 @@ class UsageAndPredictionFragment : Fragment() {
     powerCaompareTV = root.findViewById(R.id.power_compare_TV)
     billPredictionTV = root.findViewById(R.id.bill_predition_TV)
     powerCaompareTV = root.findViewById(R.id.power_compare_TV)
+    refreshButton = root.findViewById(R.id.refresh_button)
 
 
     val email = sharedPref.getString("email", "")
     val token = sharedPref.getString("token", "")
     val creds = "email=${email}&token=${token}"
+
+    refreshButton.setOnClickListener {
+      refreshButton.isEnabled = false
+      getConsumptionData().execute(creds);
+    }
+    refreshButton.isEnabled = false
     getConsumptionData().execute(creds);
 
     return root
@@ -109,6 +118,7 @@ class UsageAndPredictionFragment : Fragment() {
 
 
     override fun onPostExecute(string: String?) {
+      refreshButton.isEnabled = true
       if (string == null) doToast("Failed to fetch Consumption Data") else {
         val code = string.substring(0,2);
         when (code) {

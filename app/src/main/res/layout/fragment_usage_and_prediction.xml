@@ -207,6 +207,16 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <Button
+                android:id="@+id/refresh_button"
+                android:layout_width="50sp"
+                android:layout_height="50sp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/ic_refresh"
+                app:layout_constraintStart_toEndOf="@+id/gauge1"
+                app:layout_constraintTop_toBottomOf="@+id/textView6_HF" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
