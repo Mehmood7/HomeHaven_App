@@ -46,6 +46,11 @@ class drawerActivity : AppCompatActivity(), homeGallery {
     private lateinit var signOut: MenuItem
     private var updateStr = ""
 
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        if (item.title != null) doToast(item.title.toString())
+//        return super.onOptionsItemSelected(item)
+//    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_drawer)
@@ -119,11 +124,11 @@ class drawerActivity : AppCompatActivity(), homeGallery {
     override fun doToast(str:String){
         Toast.makeText(applicationContext,str, Toast.LENGTH_SHORT).show();
     }
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.drawer, menu)
-        return true
-    }
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        menuInflater.inflate(R.menu.drawer, menu)
+//        return true
+//    }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)

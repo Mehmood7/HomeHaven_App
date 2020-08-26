@@ -10,8 +10,10 @@ import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.speech.RecognizerIntent
+import android.view.Menu
 import android.view.View
 import android.widget.*
+import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.BufferedReader
@@ -61,6 +63,8 @@ class Room : AppCompatActivity() {
         dimdev = findViewById(R.id.includedim)
         roomLayout = findViewById(R.id.room_constarint_LO)
 
+
+
         val fab: FloatingActionButton = findViewById(R.id.fab)
         fab.setOnClickListener { view ->
             voiceCommand()
@@ -94,6 +98,13 @@ class Room : AppCompatActivity() {
         setRoom()
 
     }
+
+
+//    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        menuInflater.inflate(R.menu.drawer, menu)
+//        return true
+//    }
 
     fun enable(en:Boolean){
         dev1.findViewById<Switch>(R.id.on_off_switch).isEnabled = en
