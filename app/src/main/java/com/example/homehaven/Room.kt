@@ -212,7 +212,7 @@ class Room : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar) {
                 room_state = (room_state and 248)+ seekBar.progress
                 roomObj.updateState(room_state)
-                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                val params = "room_index=${room_index}&state=${room_state}&email=${email}&token=${token}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
                     if (night_mode) putInt("night_room${room_index}state", room_state)
@@ -348,6 +348,8 @@ class Room : AppCompatActivity() {
                     "Content-Type",
                     "application/x-www-form-urlencoded"
                 )
+                httpURLConnection.connectTimeout = 4000
+                httpURLConnection.readTimeout = 3000
                 outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
                 outputStreamWriter.write(params[0])
                 outputStreamWriter.flush()
@@ -406,14 +408,23 @@ class Room : AppCompatActivity() {
             val bufferedReader: BufferedReader
             var stringFromServer: String
             try {
-                if(night_mode) url = URL("https://homehaven.website/api/setnightroomstate")
-                else url = URL("https://homehaven.website/api/setroomstate")
+                if(night_mode) {
+                    url = URL("https://homehaven.website/api/setnightroomstate")
+                }
+                else{
+                    if(sharedPref.getBoolean("offline_enabled",false))
+                        url = URL("http://192.168.8.210/set_status")
+                    else
+                        url = URL("https://homehaven.website/api/setroomstate")
+                }
                 httpURLConnection = url.openConnection() as HttpURLConnection
                 httpURLConnection.requestMethod = "POST"
                 httpURLConnection.setRequestProperty(
                     "Content-Type",
                     "application/x-www-form-urlencoded"
                 )
+                httpURLConnection.connectTimeout = 4000
+                httpURLConnection.readTimeout = 3000
                 outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
                 outputStreamWriter.write(params[0])
                 outputStreamWriter.flush()
@@ -587,6 +598,8 @@ class Room : AppCompatActivity() {
                     "Content-Type",
                     "application/x-www-form-urlencoded"
                 )
+                httpURLConnection.connectTimeout = 4000
+                httpURLConnection.readTimeout = 3000
                 outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
                 outputStreamWriter.write(params[0])
                 outputStreamWriter.flush()

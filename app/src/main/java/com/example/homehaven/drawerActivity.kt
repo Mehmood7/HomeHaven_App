@@ -275,6 +275,8 @@ class drawerActivity : AppCompatActivity(), homeGallery {
                     "Content-Type",
                     "application/x-www-form-urlencoded"
                 )
+                httpURLConnection.connectTimeout = 4000
+                httpURLConnection.readTimeout = 3000
                 outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
                 outputStreamWriter.write(params[0])
                 outputStreamWriter.flush()

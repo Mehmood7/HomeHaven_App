@@ -58,6 +58,7 @@ class UsageAndPredictionFragment : Fragment() {
     billPredictionTV = root.findViewById(R.id.bill_predition_TV)
     powerCaompareTV = root.findViewById(R.id.power_compare_TV)
     refreshButton = root.findViewById(R.id.refresh_button)
+    previousBillTV = root.findViewById(R.id.previous_bill_TV)
 
 
     val email = sharedPref.getString("email", "")
@@ -97,6 +98,8 @@ class UsageAndPredictionFragment : Fragment() {
           "Content-Type",
           "application/x-www-form-urlencoded"
         )
+        httpURLConnection.connectTimeout = 4000
+        httpURLConnection.readTimeout = 3000
         outputStreamWriter = OutputStreamWriter(httpURLConnection.outputStream)
         outputStreamWriter.write(params[0])
         outputStreamWriter.flush()
@@ -132,7 +135,7 @@ class UsageAndPredictionFragment : Fragment() {
 
             setConsump(watts)
             billPredictionTV.text = ceil(bill).toString()
-            previous_bill_TV.text = previous_bill.toString()
+            previousBillTV.text = previous_bill.toString()
             if(today_consumption > yesterday_consumption){
               val percent = (today_consumption/yesterday_consumption - 1)*100
               powerCaompareTV.text = roundTwoDecimals(percent.toDouble()) + "% increase than yesterday."
