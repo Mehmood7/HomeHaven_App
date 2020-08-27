@@ -1,5 +1,7 @@
  package com.example.homehaven
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -18,6 +20,8 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.*
 
  class MainActivity : AppCompatActivity() {
 
@@ -35,7 +39,7 @@ import java.net.URL
 
         sharedPref = getSharedPreferences("prefs",Context.MODE_PRIVATE)?:return
 
-
+        sendNotification();
         loginbtn = findViewById(R.id.login_btn)
         emailtxt = findViewById(R.id.email_et)
         passwtxt = findViewById(R.id.passw_et)
@@ -93,6 +97,28 @@ import java.net.URL
          loginbtn.visibility = View.VISIBLE
          emaillbl.visibility = View.VISIBLE
          passwlbl.visibility = View.VISIBLE
+     }
+
+     fun sendNotification(){
+         val sdf = SimpleDateFormat("dd-MM-yyyy")
+         val d = Date()
+         val todayDate: String = sdf.format(d)
+         val lastNotified = sharedPref.getString("notification_date","NA")
+         val tips_enabled:Boolean = sharedPref.getBoolean("tips_enabled",true)
+         //if(tips_enabled && lastNotified == todayDate)
+         if (tips_enabled)
+         {
+             sharedPref.edit().putString("notification_date",todayDate).apply()
+             val ledgerId = 10
+             val intent = Intent(applicationContext, AlarmReceiver::class.java)
+             //intent.putExtra("NotificationText", "some text")
+             val pendingIntent: PendingIntent =
+                 PendingIntent.getBroadcast(applicationContext
+                     , ledgerId, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+             val alarmManager: AlarmManager =
+                 this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+             alarmManager.set(AlarmManager.RTC_WAKEUP, 3000, pendingIntent)
+         }
      }
 
      inner class passwordLoginRequest : AsyncTask<String,String, String>() {
