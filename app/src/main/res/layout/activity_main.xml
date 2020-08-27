@@ -69,11 +69,13 @@
 
     <Button
         android:id="@+id/login_btn"
+        style="@style/RobotoButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:background="@drawable/round_background"
-        android:padding="25sp"
+        android:longClickable="true"
+        android:padding="15sp"
         android:text="@string/login_str"
         android:textColor="@color/design_default_color_background"
         android:textStyle="bold"

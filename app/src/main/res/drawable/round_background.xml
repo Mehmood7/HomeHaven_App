@@ -1,13 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item >
+
+    <item android:left="60sp" android:gravity="center"
+        android:width="40sp">
         <shape
+
             android:shape="oval">
             <stroke android:width="7dp" android:color="#FF00A3E8" />
-            <solid  android:color="#fffbcdef" />
+            <solid  android:color="#ff00a3e8" />
 
         </shape>
     </item>
+    <item android:width="40sp" android:gravity="center" android:right="60sp">
+        <shape
+
+            android:shape="oval">
+            <stroke android:width="7dp" android:color="#FF00A3E8" />
+            <solid  android:color="#ff00a3e8" />
+
+        </shape>
+
+    </item>
+    <item android:width="60sp"  android:gravity="center">
+    <shape
+
+        android:shape="rectangle">
+        <stroke android:width="7dp" android:color="#FF00A3E8" />
+        <solid  android:color="#ff00a3e8" />
+
+    </shape>
+
+</item>
+
 
 
 </layer-list>

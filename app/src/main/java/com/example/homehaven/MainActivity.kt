@@ -39,7 +39,7 @@ import java.util.*
 
         sharedPref = getSharedPreferences("prefs",Context.MODE_PRIVATE)?:return
 
-        sendNotification();
+        sendNotification()
         loginbtn = findViewById(R.id.login_btn)
         emailtxt = findViewById(R.id.email_et)
         passwtxt = findViewById(R.id.passw_et)
@@ -52,7 +52,7 @@ import java.util.*
 
         if (email != "" && token != "") {
             val creds = "email=${email}&token=${token}"
-            tokenLoginRequest().execute(creds);
+            tokenLoginRequest().execute(creds)
             hide()
         }
 
@@ -63,12 +63,20 @@ import java.util.*
                 putString("email", "${emailtxt.text}")
                 commit()
             }
-            passwordLoginRequest().execute(creds);
+            passwordLoginRequest().execute(creds)
+        }
+        // for testing purpose
+        loginbtn.setOnLongClickListener {
+            with (sharedPref.edit()) {
+                putInt("failedcount", 4)
+                apply()
+            }
+            true
         }
 
     }
      fun doToast(str:String){
-         Toast.makeText(applicationContext,str,Toast.LENGTH_SHORT).show();
+         Toast.makeText(applicationContext,str,Toast.LENGTH_SHORT).show()
      }
 
      fun goToHome(){
@@ -162,14 +170,14 @@ import java.util.*
          override fun onPostExecute(string: String?) {
              enableLogin(true)
              if (string == null) doToast("No Response") else {
-                 val code = string.substring(0,2);
+                 val code = string.substring(0,2)
                  when (code) {
                      "id" -> doToast("Login Failed")
                      "ok" -> {
                          doToast("Login Successful")
                          val token = string.substring(2,14)
                          val room_count = string.get(14).toInt()-48
-                         var rooms = string.substringAfter(':').split(':');
+                         var rooms = string.substringAfter(':').split(':')
                          val name = rooms.last()
                          with(sharedPref.edit()) {
                              putInt("failedcount", 0)
@@ -178,7 +186,7 @@ import java.util.*
                              commit()
                          }
                          rooms = rooms.dropLast(1)
-                         val db = dataStore(applicationContext);
+                         val db = dataStore(applicationContext)
                          db.clearRoom()
                          for (room in rooms){
                              val name = room.substring(9)
@@ -242,7 +250,7 @@ import java.util.*
                  val failedCount = sharedPref.getInt("failedcount", 0)
                  with (sharedPref.edit()) {
                      putInt("failedcount", failedCount+1)
-                     commit()
+                     apply()
                  }
 
                  if (failedCount < 5)
@@ -260,6 +268,10 @@ import java.util.*
                      "ok" -> {
                          doToast("Login Successful")
                          goToHome()
+                         with (sharedPref.edit()) {
+                             putInt("failedcount", 0)
+                             apply()
+                         }
                      }
                      else -> {
                          doToast("Unknown Error :" + string)
