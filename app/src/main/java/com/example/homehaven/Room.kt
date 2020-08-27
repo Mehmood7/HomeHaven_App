@@ -131,7 +131,7 @@ class Room : AppCompatActivity() {
                 if (isChecked) room_state += 128
                 else room_state -=128
                 roomObj.updateState(room_state)
-                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                val params = "room_index=${room_index}&state=${room_state}&email=${email}&token=${token}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
                     if (night_mode) putInt("night_room${room_index}state", room_state)
@@ -146,7 +146,7 @@ class Room : AppCompatActivity() {
                 if (isChecked) room_state += 64
                 else room_state -= 64
                 roomObj.updateState(room_state)
-                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                val params = "room_index=${room_index}&state=${room_state}&email=${email}&token=${token}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
                     if (night_mode) putInt("night_room${room_index}state", room_state)
@@ -161,7 +161,7 @@ class Room : AppCompatActivity() {
                 if (isChecked) room_state += 32
                 else room_state -= 32
                 roomObj.updateState(room_state)
-                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                val params = "room_index=${room_index}&state=${room_state}&email=${email}&token=${token}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
                     if (night_mode) putInt("night_room${room_index}state", room_state)
@@ -176,7 +176,7 @@ class Room : AppCompatActivity() {
                 if (isChecked) room_state += 16
                 else room_state -= 16
                 roomObj.updateState(room_state)
-                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                val params = "room_index=${room_index}&state=${room_state}&email=${email}&token=${token}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
                     if (night_mode) putInt("night_room${room_index}state", room_state)
@@ -191,7 +191,7 @@ class Room : AppCompatActivity() {
                 if (isChecked) room_state += 8
                 else room_state -= 8
                 roomObj.updateState(room_state)
-                val params = "email=${email}&token=${token}&room_index=${room_index}&state=${room_state}"
+                val params = "room_index=${room_index}&state=${room_state}&email=${email}&token=${token}"
                 setRoomState().execute(params)
                 with (sharedPref.edit()) {
                     if (night_mode) putInt("night_room${room_index}state", room_state)
